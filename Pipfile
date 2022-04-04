@@ -8,7 +8,7 @@ name = "pypi"
 [dev-packages]
 pre-commit = "<2.16.0"
 black = "*"
-pytest = "<7.0.2"
+pytest = "*"
 mypy = "*"
 
 [requires]
