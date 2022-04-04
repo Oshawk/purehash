@@ -151,32 +151,32 @@ def padding(length: int) -> bytes:
 
 
 class MD5:
-    a: int
-    b: int
-    c: int
-    d: int
+    _a: int
+    _b: int
+    _c: int
+    _d: int
 
-    blocks_processed: int
-    buffer: bytearray
+    _blocks_processed: int
+    _buffer: bytearray
 
     def __init__(self, message: bytes = b""):
-        self.a = 0x67452301
-        self.b = 0xEFCDAB89
-        self.c = 0x98BADCFE
-        self.d = 0x10325476
+        self._a = 0x67452301
+        self._b = 0xEFCDAB89
+        self._c = 0x98BADCFE
+        self._d = 0x10325476
 
-        self.blocks_processed = 0
-        self.buffer = bytearray()
+        self._blocks_processed = 0
+        self._buffer = bytearray()
 
         self.update(message)
 
     def _process_block(self, block: bytes):
         m: tuple[int, ...] = unpack("<IIIIIIIIIIIIIIII", block)
 
-        a: int = self.a
-        b: int = self.b
-        c: int = self.c
-        d: int = self.d
+        a: int = self._a
+        b: int = self._b
+        c: int = self._c
+        d: int = self._d
 
         f: int
         g: int
@@ -200,45 +200,45 @@ class MD5:
             c = b
             b = b + left_rotate(f, SHIFTS[i], 32)
 
-        self.a = (self.a + a) % (2**32)
-        self.b = (self.b + b) % (2**32)
-        self.c = (self.c + c) % (2**32)
-        self.d = (self.d + d) % (2**32)
+        self._a = (self._a + a) % (2 ** 32)
+        self._b = (self._b + b) % (2 ** 32)
+        self._c = (self._c + c) % (2 ** 32)
+        self._d = (self._d + d) % (2 ** 32)
 
     def update(self, message) -> None:
-        self.buffer += message
+        self._buffer += message
 
-        for _ in range(len(self.buffer) // 64):
-            self._process_block(self.buffer[:64])
+        for _ in range(len(self._buffer) // 64):
+            self._process_block(self._buffer[:64])
 
-            self.blocks_processed += 1
-            self.buffer = self.buffer[64:]
+            self._blocks_processed += 1
+            self._buffer = self._buffer[64:]
 
     def digest(self) -> bytes:
         # Save state.
-        a: int = self.a
-        b: int = self.b
-        c: int = self.c
-        d: int = self.d
+        a: int = self._a
+        b: int = self._b
+        c: int = self._c
+        d: int = self._d
 
-        buffer_length: int = len(self.buffer)
-        self.buffer += padding((self.blocks_processed * 64) + buffer_length)
+        buffer_length: int = len(self._buffer)
+        self._buffer += padding((self._blocks_processed * 64) + buffer_length)
 
-        self._process_block(self.buffer[:64])
+        self._process_block(self._buffer[:64])
 
-        if len(self.buffer) == 128:
-            self._process_block(self.buffer[64:])
+        if len(self._buffer) == 128:
+            self._process_block(self._buffer[64:])
 
-        result: bytes = pack("<IIII", self.a, self.b, self.c, self.d)
+        result: bytes = pack("<IIII", self._a, self._b, self._c, self._d)
 
         # Restore state.
-        self.a = a
-        self.b = b
-        self.c = c
-        self.d = d
+        self._a = a
+        self._b = b
+        self._c = c
+        self._d = d
 
         # Restore buffer.
-        self.buffer = self.buffer[:buffer_length]
+        self._buffer = self._buffer[:buffer_length]
 
         return result
 

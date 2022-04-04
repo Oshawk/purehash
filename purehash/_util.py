@@ -6,7 +6,7 @@ def left_rotate(number: int, rotation: int, bits: int) -> int:
     return ((number << rotation) % (2**bits)) | (number >> (bits - rotation))
 
 
-def random_tests(x: Any, y: Any, problem_lengths: tuple[int, ...]):
+def random_tests(x: Any, y: Any, problem_lengths: tuple[int, ...]) -> None:
     lengths: tuple[int, ...] = (0, 1) + problem_lengths
 
     r: bytes
