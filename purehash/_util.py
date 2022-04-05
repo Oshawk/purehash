@@ -24,7 +24,9 @@ def padding(length: int, block_size: int, little_endian: bool) -> bytes:
 
     extra_length: bytes
     if block_size == 128:
-        extra_length = pack(f"""{"<" if little_endian else ">"}Q""", ((length * 8) >> 64) % (2 ** 64))
+        extra_length = pack(
+            f"""{"<" if little_endian else ">"}Q""", ((length * 8) >> 64) % (2**64)
+        )
     else:
         extra_length = b""
 
