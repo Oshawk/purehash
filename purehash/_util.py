@@ -45,7 +45,7 @@ def random_tests(x: Any, y: Any, problem_lengths: tuple[int, ...]) -> None:
     lengths: tuple[int, ...] = (0, 1) + problem_lengths
 
     r: bytes
-    for _ in range(8):
+    for _ in range(16):
         r = randbytes(choice(lengths))
 
         x_: Any = x(r)
@@ -54,7 +54,7 @@ def random_tests(x: Any, y: Any, problem_lengths: tuple[int, ...]) -> None:
         assert x_.digest() == y_.digest()
         assert x_.hexdigest() == y_.hexdigest()
 
-        for _ in range(8):
+        for _ in range(16):
             r = randbytes(choice(lengths))
 
             x_.update(r)

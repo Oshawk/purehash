@@ -9,4 +9,4 @@ def test_sha256():
 
 
 def test_sha512():
-    random_tests(sha512, SHA512, (55, 56, 57, 63, 64, 65))
+    random_tests(sha512, SHA512, (111, 112, 113, 127, 128, 129))
