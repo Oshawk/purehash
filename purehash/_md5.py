@@ -1,6 +1,6 @@
 from struct import pack, unpack
 
-from purehash._util import left_rotate
+from purehash._util import left_rotate, padding
 
 SHIFTS: tuple[int, ...] = (
     7,
@@ -136,20 +136,6 @@ SINES: tuple[int, ...] = (
 )
 
 
-def padding(length: int) -> bytes:
-    padding_: bytearray = bytearray(b"\x80")
-
-    length_mod: int = length % 64
-    if length_mod < 56:
-        padding_ += b"\x00" * (55 - length_mod)
-    else:
-        padding_ += b"\x00" * (119 - length_mod)
-
-    padding_ += pack("<Q", (length * 8) % (2**64))
-
-    return bytes(padding_)
-
-
 class MD5:
     _a: int
     _b: int
@@ -159,7 +145,7 @@ class MD5:
     _blocks_processed: int
     _buffer: bytearray
 
-    def __init__(self, message: bytes = b""):
+    def __init__(self, message: bytes = b"") -> None:
         self._a = 0x67452301
         self._b = 0xEFCDAB89
         self._c = 0x98BADCFE
@@ -170,7 +156,7 @@ class MD5:
 
         self.update(message)
 
-    def _process_block(self, block: bytes):
+    def _process_block(self, block: bytes) -> None:
         m: tuple[int, ...] = unpack("<IIIIIIIIIIIIIIII", block)
 
         a: int = self._a
@@ -178,6 +164,7 @@ class MD5:
         c: int = self._c
         d: int = self._d
 
+        i: int
         f: int
         g: int
         for i in range(64):
@@ -200,10 +187,10 @@ class MD5:
             c = b
             b = b + left_rotate(f, SHIFTS[i], 32)
 
-        self._a = (self._a + a) % (2 ** 32)
-        self._b = (self._b + b) % (2 ** 32)
-        self._c = (self._c + c) % (2 ** 32)
-        self._d = (self._d + d) % (2 ** 32)
+        self._a = (self._a + a) % (2**32)
+        self._b = (self._b + b) % (2**32)
+        self._c = (self._c + c) % (2**32)
+        self._d = (self._d + d) % (2**32)
 
     def update(self, message) -> None:
         self._buffer += message
@@ -222,7 +209,7 @@ class MD5:
         d: int = self._d
 
         buffer_length: int = len(self._buffer)
-        self._buffer += padding((self._blocks_processed * 64) + buffer_length)
+        self._buffer += padding((self._blocks_processed * 64) + buffer_length, 64, True)
 
         self._process_block(self._buffer[:64])
 
