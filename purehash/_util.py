@@ -80,7 +80,7 @@ def random_tests(x: Any, y: Any, problem_lengths: tuple[int, ...]) -> None:
     r: bytes
     for _ in range(16):
         length = choice(lengths)
-        r = pack(1, False, *(getrandbits(8) for _ in range(length)))
+        r = bytes(getrandbits(8) for _ in range(length))
 
         x_: Any = x(r)
         y_: Any = y(r)
@@ -90,7 +90,7 @@ def random_tests(x: Any, y: Any, problem_lengths: tuple[int, ...]) -> None:
 
         for _ in range(16):
             length = choice(lengths)
-            r = pack(1, False, *(getrandbits(8) for _ in range(length)))
+            r = bytes(getrandbits(8) for _ in range(length))
 
             x_.update(r)
             y_.update(r)
