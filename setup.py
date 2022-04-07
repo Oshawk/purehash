@@ -26,7 +26,7 @@ setup(
     packages=find_packages(),
     python_requires=">=3.7, <4",
     extras_require={
-        "dev": ["pre-commit", "black", "mypy"],
+        "dev": ["pre-commit", "black", "mypy", "twine"],
         "test": ["pytest"],
     },
 )
