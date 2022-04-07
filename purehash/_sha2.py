@@ -1,6 +1,4 @@
-from struct import pack, unpack
-
-from purehash._util import padding, right_rotate
+from purehash._util import pack, padding, right_rotate, unpack
 
 SHA256_CONSTANTS: tuple[int, ...] = (
     0x428A2F98,
@@ -83,7 +81,7 @@ class SHA256:
     _blocks_processed: int
     _buffer: bytearray
 
-    def __init__(self, message=b"") -> None:
+    def __init__(self, message: bytes = b"") -> None:
         self._a = 0x6A09E667
         self._b = 0xBB67AE85
         self._c = 0x3C6EF372
@@ -99,7 +97,7 @@ class SHA256:
         self.update(message)
 
     def _process_block(self, block: bytes) -> None:
-        w: list[int] = list(unpack(">IIIIIIIIIIIIIIII", block))
+        w: list[int] = list(unpack(4, False, block))
 
         i: int
         s0: int
@@ -186,7 +184,7 @@ class SHA256:
 
         buffer_length: int = len(self._buffer)
         self._buffer += padding(
-            (self._blocks_processed * 64) + buffer_length, 64, False
+            (self._blocks_processed * 64) + buffer_length, 64, 8, False
         )
 
         self._process_block(self._buffer[:64])
@@ -195,7 +193,8 @@ class SHA256:
             self._process_block(self._buffer[64:])
 
         result: bytes = pack(
-            ">IIIIIIII",
+            4,
+            False,
             self._a,
             self._b,
             self._c,
@@ -322,7 +321,7 @@ class SHA512:
     _blocks_processed: int
     _buffer: bytearray
 
-    def __init__(self, message=b"") -> None:
+    def __init__(self, message: bytes = b"") -> None:
         self._a = 0x6A09E667F3BCC908
         self._b = 0xBB67AE8584CAA73B
         self._c = 0x3C6EF372FE94F82B
@@ -338,7 +337,7 @@ class SHA512:
         self.update(message)
 
     def _process_block(self, block: bytes) -> None:
-        w: list[int] = list(unpack(">QQQQQQQQQQQQQQQQ", block))
+        w: list[int] = list(unpack(8, False, block))
 
         i: int
         s0: int
@@ -425,7 +424,7 @@ class SHA512:
 
         buffer_length: int = len(self._buffer)
         self._buffer += padding(
-            (self._blocks_processed * 128) + buffer_length, 128, False
+            (self._blocks_processed * 128) + buffer_length, 128, 16, False
         )
 
         self._process_block(self._buffer[:128])
@@ -434,7 +433,8 @@ class SHA512:
             self._process_block(self._buffer[128:])
 
         result: bytes = pack(
-            ">QQQQQQQQ",
+            8,
+            False,
             self._a,
             self._b,
             self._c,

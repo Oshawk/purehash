@@ -1,6 +1,4 @@
-from struct import pack, unpack
-
-from purehash._util import left_rotate, padding
+from purehash._util import left_rotate, pack, padding, unpack
 
 SHIFTS: tuple[int, ...] = (
     7,
@@ -157,7 +155,7 @@ class MD5:
         self.update(message)
 
     def _process_block(self, block: bytes) -> None:
-        m: tuple[int, ...] = unpack("<IIIIIIIIIIIIIIII", block)
+        m: tuple[int, ...] = unpack(4, True, block)
 
         a: int = self._a
         b: int = self._b
@@ -192,7 +190,7 @@ class MD5:
         self._c = (self._c + c) % (2**32)
         self._d = (self._d + d) % (2**32)
 
-    def update(self, message) -> None:
+    def update(self, message: bytes) -> None:
         self._buffer += message
 
         for _ in range(len(self._buffer) // 64):
@@ -209,14 +207,16 @@ class MD5:
         d: int = self._d
 
         buffer_length: int = len(self._buffer)
-        self._buffer += padding((self._blocks_processed * 64) + buffer_length, 64, True)
+        self._buffer += padding(
+            (self._blocks_processed * 64) + buffer_length, 64, 8, True
+        )
 
         self._process_block(self._buffer[:64])
 
         if len(self._buffer) == 128:
             self._process_block(self._buffer[64:])
 
-        result: bytes = pack("<IIII", self._a, self._b, self._c, self._d)
+        result: bytes = pack(4, True, self._a, self._b, self._c, self._d)
 
         # Restore state.
         self._a = a

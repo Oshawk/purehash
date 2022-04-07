@@ -1,5 +1,4 @@
 from random import choice, randbytes
-from struct import pack
 from typing import Any
 
 
@@ -13,7 +12,53 @@ def right_rotate(number: int, rotation: int, bits: int) -> int:
     return left_rotate(number, bits - rotation, bits)
 
 
-def padding(length: int, block_size: int, little_endian: bool) -> bytes:
+def pack(size: int, little_endian: bool, *args: int) -> bytes:
+    result: bytearray = bytearray()
+
+    number: int
+    for number in args:
+        packed: bytearray = bytearray()
+        for _ in range(size):
+            byte: int = number % (2**8)
+            number >>= 8
+            if little_endian:
+                packed.append(byte)
+            else:
+                packed.insert(0, byte)
+
+        result += packed
+
+    return bytes(result)
+
+
+def unpack(size: int, little_endian: bool, bytes_: bytes) -> tuple[int, ...]:
+    assert len(bytes_) % size == 0, "Length of bytes_ must be a multiple of size."
+
+    result: list[int] = []
+
+    i: int
+    for i in range(0, len(bytes_), size):
+        packed: bytearray = bytearray(bytes_[i : i + size])
+        number: int = 0
+        for _ in range(size):
+            number <<= 8
+
+            byte: int
+            if little_endian:
+                byte = packed.pop()
+            else:
+                byte = packed.pop(0)
+
+            number += byte
+
+        result.append(number)
+
+    return tuple(result)
+
+
+def padding(
+    length: int, block_size: int, length_size: int, length_little_endian: bool
+) -> bytes:
     padding_: bytearray = bytearray(b"\x80")
 
     length_mod: int = length % block_size
@@ -22,21 +67,7 @@ def padding(length: int, block_size: int, little_endian: bool) -> bytes:
     else:
         padding_ += b"\x00" * (block_size * 2 - (block_size // 8) - 1 - length_mod)
 
-    extra_length: bytes
-    if block_size == 128:
-        extra_length = pack(
-            f"""{"<" if little_endian else ">"}Q""", ((length * 8) >> 64) % (2**64)
-        )
-    else:
-        extra_length = b""
-
-    if not little_endian:
-        padding_ += extra_length
-
-    padding_ += pack(f"""{"<" if little_endian else ">"}Q""", (length * 8) % (2**64))
-
-    if little_endian:
-        padding_ += extra_length
+    padding_ += pack(length_size, length_little_endian, length * 8)
 
     return bytes(padding_)
 
