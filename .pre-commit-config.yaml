@@ -3,8 +3,8 @@ repos:
     rev: v0.942
     hooks:
       - id: mypy
-        args: [--check-untyped-defs]
-        additional_dependencies: [pygame, pytest]
+        args: [--check-untyped-defs, --ignore-missing-imports]
+        additional_dependencies: [pytest]
   - repo: https://github.com/psf/black
     rev: stable
     hooks:
