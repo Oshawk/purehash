@@ -1,4 +1,4 @@
-from random import choice, randrange
+from random import getrandbits
 import struct
 
 from purehash._util import pack, unpack
@@ -18,9 +18,7 @@ def test_pack_unpack():
     for size in (1, 2, 4, 8):
         for little_endian in (True, False):
             for len_numbers in range(1, 5):
-                numbers = tuple(
-                    randrange(0, (2 ** (size * 8))) for _ in range(len_numbers)
-                )
+                numbers = tuple(getrandbits(size * 8) for _ in range(len_numbers))
                 struct_format = LITTLE_ENDIAN_MAP[little_endian] + (
                     SIZE_MAP[size] * len_numbers
                 )

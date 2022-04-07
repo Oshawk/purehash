@@ -1,5 +1,5 @@
 from __future__ import annotations
-from random import choice, randbytes
+from random import choice, getrandbits
 from typing import Any
 
 
@@ -76,9 +76,11 @@ def padding(
 def random_tests(x: Any, y: Any, problem_lengths: tuple[int, ...]) -> None:
     lengths: tuple[int, ...] = (0, 1) + problem_lengths
 
+    length: int
     r: bytes
     for _ in range(16):
-        r = randbytes(choice(lengths))
+        length = choice(lengths)
+        r = pack(1, False, *(getrandbits(8) for _ in range(length)))
 
         x_: Any = x(r)
         y_: Any = y(r)
@@ -87,7 +89,8 @@ def random_tests(x: Any, y: Any, problem_lengths: tuple[int, ...]) -> None:
         assert x_.hexdigest() == y_.hexdigest()
 
         for _ in range(16):
-            r = randbytes(choice(lengths))
+            length = choice(lengths)
+            r = pack(1, False, *(getrandbits(8) for _ in range(length)))
 
             x_.update(r)
             y_.update(r)
