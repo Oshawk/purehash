@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from purehash._util import pack, padding, right_rotate, unpack
 
 SHA256_CONSTANTS: tuple[int, ...] = (

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from purehash._util import left_rotate, pack, padding, unpack
 
 
