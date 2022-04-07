@@ -26,4 +26,4 @@ m.hexdigest()  # "e4d909c290d0fb1ca068ffaddf22cbd0"
 - MD5 (`md5`)
 - SHA-1 (`sha1`)
 - SHA-256 (`sha256`)
-- SHA-512 (`sha256`)
+- SHA-512 (`sha512`)
