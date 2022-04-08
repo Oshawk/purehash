@@ -1,6 +1,6 @@
 from hashlib import md5
 
-from purehash._md5 import MD5
+from purehash.algorithms._md5 import MD5
 from purehash._util import random_tests
 
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from purehash._common import Hash
 from purehash._util import left_rotate, pack, padding, unpack
 
 SHIFTS: tuple[int, ...] = (
@@ -136,14 +137,11 @@ SINES: tuple[int, ...] = (
 )
 
 
-class MD5:
+class MD5(Hash):
     _a: int
     _b: int
     _c: int
     _d: int
-
-    _blocks_processed: int
-    _buffer: bytearray
 
     def __init__(self, message: bytes = b"") -> None:
         self._a = 0x67452301
@@ -151,10 +149,7 @@ class MD5:
         self._c = 0x98BADCFE
         self._d = 0x10325476
 
-        self._blocks_processed = 0
-        self._buffer = bytearray()
-
-        self.update(message)
+        super().__init__(message=message)
 
     def _process_block(self, block: bytes) -> None:
         m: tuple[int, ...] = unpack(4, True, block)
@@ -230,6 +225,3 @@ class MD5:
         self._buffer = self._buffer[:buffer_length]
 
         return result
-
-    def hexdigest(self) -> str:
-        return self.digest().hex()

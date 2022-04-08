@@ -1,6 +1,6 @@
 from hashlib import sha256, sha512
 
-from purehash._sha2 import SHA256, SHA512
+from purehash.algorithms._sha2 import SHA256, SHA512
 from purehash._util import random_tests
 
 

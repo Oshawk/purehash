@@ -1,17 +1,15 @@
 from __future__ import annotations
 
+from purehash._common import Hash
 from purehash._util import left_rotate, pack, padding, unpack
 
 
-class SHA1:
+class SHA1(Hash):
     _a: int
     _b: int
     _c: int
     _d: int
     _e: int
-
-    _blocks_processed: int
-    _buffer: bytearray
 
     def __init__(self, message: bytes = b""):
         self._a = 0x67452301
@@ -20,10 +18,7 @@ class SHA1:
         self._d = 0x10325476
         self._e = 0xC3D2E1F0
 
-        self._blocks_processed = 0
-        self._buffer = bytearray()
-
-        self.update(message)
+        super().__init__(message=message)
 
     def _process_block(self, block: bytes) -> None:
         w: list[int] = list(unpack(4, False, block))
@@ -107,6 +102,3 @@ class SHA1:
         self._buffer = self._buffer[:buffer_length]
 
         return result
-
-    def hexdigest(self) -> str:
-        return self.digest().hex()

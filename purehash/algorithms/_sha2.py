@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from purehash._common import Hash
 from purehash._util import pack, padding, right_rotate, unpack
 
 SHA256_CONSTANTS: tuple[int, ...] = (
@@ -70,7 +71,7 @@ SHA256_CONSTANTS: tuple[int, ...] = (
 )
 
 
-class SHA256:
+class SHA256(Hash):
     _a: int
     _b: int
     _c: int
@@ -79,9 +80,6 @@ class SHA256:
     _f: int
     _g: int
     _h: int
-
-    _blocks_processed: int
-    _buffer: bytearray
 
     def __init__(self, message: bytes = b"") -> None:
         self._a = 0x6A09E667
@@ -93,10 +91,7 @@ class SHA256:
         self._g = 0x1F83D9AB
         self._h = 0x5BE0CD19
 
-        self._blocks_processed = 0
-        self._buffer = bytearray()
-
-        self.update(message)
+        super().__init__(message=message)
 
     def _process_block(self, block: bytes) -> None:
         w: list[int] = list(unpack(4, False, block))
@@ -222,9 +217,6 @@ class SHA256:
 
         return result
 
-    def hexdigest(self) -> str:
-        return self.digest().hex()
-
 
 SHA512_CONSTANTS: tuple[int, ...] = (
     0x428A2F98D728AE22,
@@ -310,7 +302,7 @@ SHA512_CONSTANTS: tuple[int, ...] = (
 )
 
 
-class SHA512:
+class SHA512(Hash):
     _a: int
     _b: int
     _c: int
@@ -319,9 +311,6 @@ class SHA512:
     _f: int
     _g: int
     _h: int
-
-    _blocks_processed: int
-    _buffer: bytearray
 
     def __init__(self, message: bytes = b"") -> None:
         self._a = 0x6A09E667F3BCC908
@@ -333,10 +322,7 @@ class SHA512:
         self._g = 0x1F83D9ABFB41BD6B
         self._h = 0x5BE0CD19137E2179
 
-        self._blocks_processed = 0
-        self._buffer = bytearray()
-
-        self.update(message)
+        super().__init__(message=message)
 
     def _process_block(self, block: bytes) -> None:
         w: list[int] = list(unpack(8, False, block))
@@ -461,6 +447,3 @@ class SHA512:
         self._buffer = self._buffer[:buffer_length]
 
         return result
-
-    def hexdigest(self) -> str:
-        return self.digest().hex()
